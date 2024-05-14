@@ -15,9 +15,10 @@ function playClick() {
 
     osc.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    
+
     osc.start();
     osc.stop(audioContext.currentTime + 0.1);
+    console.log('Tick');
 }
 
 function startMetronome() {
@@ -29,23 +30,14 @@ function startMetronome() {
 }
 
 startStopButton.addEventListener('click', () => {
+    console.log('Start/Stop button clicked');
     // Resume audio context on user interaction
     if (audioContext.state === 'suspended') {
         audioContext.resume().then(() => {
+            console.log('Audio context resumed');
             toggleMetronome();
+        }).catch(error => {
+            console.error('Audio context resume failed:', error);
         });
     } else {
-        toggleMetronome();
-    }
-});
-
-function toggleMetronome() {
-    if (isRunning) {
-        clearInterval(intervalId);
-        startStopButton.textContent = 'Start';
-    } else {
-        startMetronome();
-        startStopButton.textContent = 'Stop';
-    }
-    isRunning = !isRunning;
-}
+        toggleMetrono
