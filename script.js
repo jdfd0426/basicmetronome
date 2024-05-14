@@ -3,6 +3,7 @@ const startStopButton = document.getElementById('startStop');
 let isRunning = false;
 let intervalId;
 
+// Create the audio context
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 function playClick() {
@@ -14,16 +15,25 @@ function playClick() {
     osc.stop(audioContext.currentTime + 0.1);
 }
 
+function startMetronome() {
+    const bpm = parseInt(bpmInput.value);
+    const interval = 60000 / bpm;
+    intervalId = setInterval(() => {
+        playClick();
+    }, interval);
+}
+
 startStopButton.addEventListener('click', () => {
+    // Resume audio context on user interaction
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+
     if (isRunning) {
         clearInterval(intervalId);
         startStopButton.textContent = 'Start';
     } else {
-        const bpm = parseInt(bpmInput.value);
-        const interval = 60000 / bpm;
-        intervalId = setInterval(() => {
-            playClick(); // Call the playClick function here
-        }, interval);
+        startMetronome();
         startStopButton.textContent = 'Stop';
     }
     isRunning = !isRunning;
