@@ -10,7 +10,12 @@ function playClick() {
     const osc = audioContext.createOscillator();
     osc.frequency.value = 1000; // Frequency in Hz
     osc.type = 'sine'; // Waveform type
-    osc.connect(audioContext.destination);
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.1; // Volume control
+
+    osc.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
     osc.start();
     osc.stop(audioContext.currentTime + 0.1);
 }
@@ -26,9 +31,15 @@ function startMetronome() {
 startStopButton.addEventListener('click', () => {
     // Resume audio context on user interaction
     if (audioContext.state === 'suspended') {
-        audioContext.resume();
+        audioContext.resume().then(() => {
+            toggleMetronome();
+        });
+    } else {
+        toggleMetronome();
     }
+});
 
+function toggleMetronome() {
     if (isRunning) {
         clearInterval(intervalId);
         startStopButton.textContent = 'Start';
@@ -37,4 +48,4 @@ startStopButton.addEventListener('click', () => {
         startStopButton.textContent = 'Stop';
     }
     isRunning = !isRunning;
-});
+}
